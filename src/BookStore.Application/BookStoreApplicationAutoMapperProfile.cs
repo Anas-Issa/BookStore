@@ -2,6 +2,7 @@
 using BookStore.Authors;
 using BookStore.Books;
 using BookStore.Members;
+using System.Linq;
 
 namespace BookStore;
 
@@ -27,7 +28,14 @@ public class BookStoreApplicationAutoMapperProfile : Profile
         CreateMap<CreateAuthorDto, Author>();
         CreateMap<UpdateAuthorDto, Author>();
 
-        CreateMap<Member, MemberDto>();
+        CreateMap<Member, MemberDto>()
+            .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.BorrowedBooks.Select(b => new MemberBookDto
+            {
+                BookId = b.Id,
+                BorrowedNookName = b.BorrowedBook.Name,
+                BorrowingDate = b.BorrowingDate,
+                ReturnDate = b.ReturnDate,
+            })));
         CreateMap<CreateMemberDto, Member>();
         CreateMap<MemberBookDto, MemberBook>();
         CreateMap<MemberBook, MemberBookDto>();

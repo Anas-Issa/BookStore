@@ -98,15 +98,11 @@ public class BookStoreDbContext :
         });
         builder.Entity<Author>(b =>
         {
-            b.ToTable(BookStoreConsts.DbTablePrefix + "Authors",
-                BookStoreConsts.DbSchema);
-
+            b.ToTable(BookStoreConsts.DbTablePrefix + "Authors", BookStoreConsts.DbSchema);
             b.ConfigureByConvention();
-
             b.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(AuthorConsts.MaxNameLength);
-
+             .IsRequired()
+             .HasMaxLength(AuthorConsts.MaxNameLength);
             b.HasIndex(x => x.Name);
         });
 
@@ -127,7 +123,7 @@ public class BookStoreDbContext :
         {
             b.ToTable(BookStoreConsts.DbTablePrefix + "MemberBooks", BookStoreConsts.DbSchema);
             b.ConfigureByConvention();
-            // b.HasOne<Book>().WithMany().HasForeignKey(b => b.BookId).IsRequired();
+            //b.HasOne<Book>().WithMany().HasForeignKey(b => b.BookId).IsRequired();
             //b.HasOne<Member>().WithMany(m => m.Books).HasForeignKey(b => b.MemberId).IsRequired();
         });
     }

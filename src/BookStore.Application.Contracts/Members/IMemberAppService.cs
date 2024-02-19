@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -10,4 +12,6 @@ public interface IMemberAppService : ICrudAppService<
     CreateMemberDto,
     UpdateMemberDto>
 {
+    Task BorrowBooksAsync(Guid MemberId, List<Guid> BooksIds);
+
 }

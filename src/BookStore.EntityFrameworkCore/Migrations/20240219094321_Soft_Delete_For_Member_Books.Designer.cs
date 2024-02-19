@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace BookStore.Migrations
 {
     [DbContext(typeof(BookStoreDbContext))]
-    [Migration("20240218191909_Added_Member")]
-    partial class Added_Member
+    [Migration("20240219094321_Soft_Delete_For_Member_Books")]
+    partial class Soft_Delete_For_Member_Books
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -249,10 +249,16 @@ namespace BookStore.Migrations
                     b.Property<DateTime>("BorrowingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
                     b.Property<Guid>("MemberId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ReturnDate")
+                    b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("TenantId")
@@ -260,6 +266,8 @@ namespace BookStore.Migrations
                         .HasColumnName("TenantId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
 
                     b.HasIndex("MemberId");
 
@@ -2026,8 +2034,14 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Members.MemberBook", b =>
                 {
+                    b.HasOne("BookStore.Books.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BookStore.Members.Member", null)
-                        .WithMany("Books")
+                        .WithMany("BorrowedBooks")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2187,7 +2201,7 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Members.Member", b =>
                 {
-                    b.Navigation("Books");
+                    b.Navigation("BorrowedBooks");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

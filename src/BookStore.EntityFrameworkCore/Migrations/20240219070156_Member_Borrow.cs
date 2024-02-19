@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookStore.Migrations
 {
     /// <inheritdoc />
-    public partial class Added_Member : Migration
+    public partial class Member_Borrow : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,11 +40,17 @@ namespace BookStore.Migrations
                     BookId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BorrowingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppMemberBooks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppMemberBooks_AppBooks_BookId",
+                        column: x => x.BookId,
+                        principalTable: "AppBooks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AppMemberBooks_AppMembers_MemberId",
                         column: x => x.MemberId,
@@ -52,6 +58,11 @@ namespace BookStore.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppMemberBooks_BookId",
+                table: "AppMemberBooks",
+                column: "BookId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppMemberBooks_MemberId",
