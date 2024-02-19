@@ -1,8 +1,10 @@
-﻿using BookStore.Permissions;
+﻿using BookStore.Books;
+using BookStore.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
@@ -17,7 +19,9 @@ public class MemberAppService : CrudAppService<
         UpdateMemberDto>, IMemberAppService
 {
     private readonly IMemberRepository _memberRepository;
-    public MemberAppService(IMemberRepository memberRepository) : base(memberRepository)
+    private readonly IBookRepository _bookRepository;
+    public MemberAppService(IMemberRepository memberRepository,
+                             IBookRepository bookRepository) : base(memberRepository)
     {
         GetPolicyName = BookStorePermissions.Members.Default;
         GetListPolicyName = BookStorePermissions.Members.Default;
@@ -25,6 +29,7 @@ public class MemberAppService : CrudAppService<
         UpdatePolicyName = BookStorePermissions.Members.Edit;
         DeletePolicyName = BookStorePermissions.Members.Delete;
         _memberRepository = memberRepository;
+        _bookRepository = bookRepository;
     }
     protected override async Task<Member> GetEntityByIdAsync(Guid id)
     {
@@ -60,18 +65,42 @@ public class MemberAppService : CrudAppService<
     public override async Task<MemberDto> CreateAsync(CreateMemberDto input)
     {
         await CheckCreatePolicyAsync();
-        var entity = await MapToEntityAsync(input);
+        var booksIds = input.Books.ToList();
+        if (await CheckBooksIds(booksIds))
+        {
+            throw new UserFriendlyException("Some Books not Existed");
+        }
+        //var entity = await MapToEntityAsync(input);
+        var newMember = new Member
+        {
+            Name = input.Name,
+            Description = input.Description,
+        };
         if (input.Books.Any())
         {
 
-            foreach (var item in entity.BorrowedBooks)
+            foreach (var bookId in input.Books)
             {
-                EntityHelper.TrySetId(item, () => GuidGenerator.Create());
-                item.MemberId = entity.Id;
+
+                // Create MemberBook entity
+                var memberBook = new MemberBook
+                {
+                    BookId = bookId,
+                    BorrowingDate = DateTime.Now,
+                    MemberId = newMember.Id,
+                };
+                EntityHelper.TrySetId(memberBook, () => GuidGenerator.Create());
+                // Borrow the book
+                newMember.BorrowBook(memberBook);
+
             }
         }
-        await Repository.InsertAsync(entity);
-        return await MapToGetOutputDtoAsync(entity);
+        await Repository.InsertAsync(newMember);
+        var result = new MemberDto
+        {
+            Id = newMember.Id
+        };
+        return result;
     }
 
     public override async Task<MemberDto> GetAsync(Guid id)
@@ -114,4 +143,11 @@ public class MemberAppService : CrudAppService<
     {
         return (await _memberRepository.WithDetailsAsync());
     }
+    private async Task<bool> CheckBooksIds(List<Guid> booksIds)
+    {
+        var checkedList = await _bookRepository.GetExistingBookIdsAsync(booksIds);
+        return booksIds.Count() != checkedList.Count();
+
+    }
+
 }

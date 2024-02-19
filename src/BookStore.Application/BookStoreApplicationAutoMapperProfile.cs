@@ -32,7 +32,7 @@ public class BookStoreApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.BorrowedBooks.Select(b => new MemberBookDto
             {
                 BookId = b.Id,
-                BorrowedNookName = b.BorrowedBook.Name,
+                BorrowedBookName = b.BorrowedBook.Name,
                 BorrowingDate = b.BorrowingDate,
                 ReturnDate = b.ReturnDate,
             })));
