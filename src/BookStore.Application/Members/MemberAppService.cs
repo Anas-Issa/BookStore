@@ -98,7 +98,10 @@ public class MemberAppService : CrudAppService<
         await Repository.InsertAsync(newMember);
         var result = new MemberDto
         {
-            Id = newMember.Id
+            Id = newMember.Id,
+            Name = newMember.Name,
+            Description = newMember.Description,
+
         };
         return result;
     }
@@ -139,6 +142,7 @@ public class MemberAppService : CrudAppService<
 
 
     }
+
     protected override async Task<IQueryable<Member>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
     {
         return (await _memberRepository.WithDetailsAsync());

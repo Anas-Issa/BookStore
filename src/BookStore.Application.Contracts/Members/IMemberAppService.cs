@@ -13,5 +13,6 @@ public interface IMemberAppService : ICrudAppService<
     UpdateMemberDto>
 {
     Task BorrowBooksAsync(Guid MemberId, List<Guid> BooksIds);
+    Task ReturnBook(Guid memberId, List<Guid> booksIds);
 
 }
