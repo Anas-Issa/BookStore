@@ -37,6 +37,7 @@ public class BookStoreApplicationAutoMapperProfile : Profile
                 ReturnDate = b.ReturnDate,
             })));
         CreateMap<CreateMemberDto, Member>();
+        CreateMap<UpdateMemberDto, Member>();
         CreateMap<MemberBookDto, MemberBook>();
         CreateMap<MemberBook, MemberBookDto>();
 
