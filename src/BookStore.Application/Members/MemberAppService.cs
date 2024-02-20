@@ -70,7 +70,6 @@ public class MemberAppService : CrudAppService<
         {
             throw new UserFriendlyException("Some Books not Existed");
         }
-        //var entity = await MapToEntityAsync(input);
         var newMember = new Member
         {
             Name = input.Name,
@@ -134,13 +133,10 @@ public class MemberAppService : CrudAppService<
             entities = await AsyncExecuter.ToListAsync(query);
             entityDtos = await MapToGetListOutputDtosAsync(entities);
         }
-
         return new PagedResultDto<MemberDto>(
             totalCount,
             entityDtos
         );
-
-
     }
 
     protected override async Task<IQueryable<Member>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)

@@ -1,5 +1,6 @@
 ﻿using BookStore.Books;
 using BookStore.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,8 @@ public class AuthorAppService : CrudAppService<Author, AuthorDto, Guid, AuthorPa
 
 
     //get filterd,sorted,paged list of authors
+    [Authorize(policy: "FullNameControl")]
+
     public override async Task<PagedResultDto<AuthorDto>> GetListAsync(AuthorPagedAndSortedResultRequestDto input)
     {
         await CheckGetListPolicyAsync();

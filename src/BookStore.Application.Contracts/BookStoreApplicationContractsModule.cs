@@ -1,4 +1,8 @@
-﻿using Volo.Abp.Account;
+﻿using BookStore.Authentication;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.Account;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
@@ -24,5 +28,15 @@ public class BookStoreApplicationContractsModule : AbpModule
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
         BookStoreDtoExtensions.Configure();
+    }
+
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddAuthorizationCore(options =>
+        {
+            options.AddPolicy("FullNameControl", policy => policy.RequireClaim("FullName"));
+        });
+        context.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        context.Services.AddTransient<IClaimsTransformation, CustomClaimsTransformer>();
     }
 }

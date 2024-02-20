@@ -2,28 +2,27 @@
 
 #nullable disable
 
-namespace BookStore.Migrations
+namespace BookStore.Migrations;
+
+/// <inheritdoc />
+public partial class Soft_Delete_For_Member_Books : Migration
 {
     /// <inheritdoc />
-    public partial class Soft_Delete_For_Member_Books : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsDeleted",
-                table: "AppMemberBooks",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-        }
+        migrationBuilder.AddColumn<bool>(
+            name: "IsDeleted",
+            table: "AppMemberBooks",
+            type: "bit",
+            nullable: false,
+            defaultValue: false);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "IsDeleted",
-                table: "AppMemberBooks");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            name: "IsDeleted",
+            table: "AppMemberBooks");
     }
 }
